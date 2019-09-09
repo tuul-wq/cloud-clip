@@ -1,15 +1,18 @@
 <template>
-    <div class="upload-item">item</div>
+    <div id="download-list">
+    </div>
 </template>
 
 <script>
+
 export default {
-    name: 'UploadItem'
+    name: 'DownList',
+    components: { }
 }
 </script>
 
 <style lang="scss" scoped>
-.upload-item {
+#download-list {
     font-size: 15pt;
 }
 </style>

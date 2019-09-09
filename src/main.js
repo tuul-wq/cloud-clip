@@ -9,7 +9,7 @@ const firebaseConfig = {
     authDomain: "the-cloud-clip.firebaseapp.com",
     databaseURL: "https://the-cloud-clip.firebaseio.com",
     projectId: "the-cloud-clip",
-    storageBucket: "",
+    storageBucket: "the-cloud-clip.appspot.com",
     messagingSenderId: "3947679510",
     appId: "1:3947679510:web:6543bc2bfba55bef"
 };
