@@ -1,5 +1,12 @@
 <template>
     <main id="main">
+        <User class="corner-right"
+            :isLoggedIn="isLoggedIn"
+            :email="user.email"
+            @signin="signin"
+            @logout="logout"
+        ></User>
+
         <UpList v-if="hasRegisteredFiles"
             :uploads="uploads"
             @upload="uploadFiles"
@@ -15,6 +22,7 @@
 
 <script>
 import Uploader from '@/components/upload/Uploader.vue';
+import User from '@/components/shared/User.vue';
 import UpList from '@/components/upload/UpList.vue';
 import DownList from '@/components/download/DownList.vue';
 import Banner from '@/components/download/Banner.vue';
@@ -25,24 +33,25 @@ import 'firebase/auth';
 
 export default {
     name: 'Main',
-    components: { Uploader, UpList, Banner, DownList },
+    components: { Uploader, UpList, Banner, DownList, User },
 
     data() {
         return {
             uploads: [],
-            user: null,
+            user: {},
+            isLoggedIn: false,
         }
     },
-    created() {
-        this._loginTEST();
-    },
+
     methods: {
         registerFiles(files) {
             this.uploads.push(...files);
         },
+
         unregisterFile(index) {
             this.uploads.splice(index, 1);
         },
+
         // uploadFiles(files) {
         uploadFiles(data) {
             // uploads
@@ -50,7 +59,23 @@ export default {
             // expiration
             // isProtected
             this._createDbRecord(data);
-            // this._uploadFile(file);
+            this._uploadFile(file);
+        },
+
+        signin() {
+            const e = 'vasya@gmail.com';
+            const p = '123456';
+            firebase.auth().signInWithEmailAndPassword(e, p).then(user => {
+                this.user = user.user;
+                this.isLoggedIn = true;
+            });
+        },
+
+        logout() {
+            firebase.auth().signOut().then(() => {
+                this.user = {}
+                this.isLoggedIn = false;
+            });
         },
 
         _createDbRecord(data) {
@@ -81,14 +106,6 @@ export default {
 
         _getStorage(fileName, folder = '') {
             return this._storage.ref().child(folder + '/' + fileName);
-        },
-
-        _loginTEST() {
-            const e = 'vasya@gmail.com';
-            const p = '123456';
-            firebase.auth().signInWithEmailAndPassword(e, p).then(user => {
-                this.user = user.user;
-            });
         }
     },
     computed: {
@@ -115,6 +132,13 @@ export default {
     column-gap: 3rem;
     row-gap: 3rem;
     height: 100%;
+    position: relative;
+
+    .corner-right {
+        right: -1rem;
+        top: -1rem;
+        position: absolute;
+    }
 }
 
 @media (max-width: 580px) {
