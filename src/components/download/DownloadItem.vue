@@ -1,27 +1,35 @@
 <template>
-    <!-- <div class="download-item">
+    <li class="download-item">
         <button @click="remove">X</button>
         {{ item.name }}
-    </div> -->
-    <div>download item</div>
+    </li>
 </template>
 
 <script>
 export default {
     name: 'DownloadItem',
-    // props: {
-    //     item: { type: File, default: {} },
-    // },
+    props: {
+        item: {
+            type: File, // TODO: change type
+            default: {}
+        },
+    },
     methods: {
         remove() {
-            // this.$emit('remove', this.item);
+            this.$emit('remove', this.item);
         }
     },
 }
 </script>
 
 <style lang="scss" scoped>
+@import '@/styles/colors.scss';
+@import '@/styles/variables.scss';
+
 .download-item {
-    font-size: 15pt;
+    border: 1px solid $gray-md;
+    border-radius: $radius-sm;
+    padding: 1rem;
+    box-shadow: $item-shadow;
 }
 </style>

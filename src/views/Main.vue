@@ -15,7 +15,7 @@
         ></UpList>
         <Uploader v-else @register="registerFiles"></Uploader>
 
-        <DownList v-if="hasDownloadFiles"></DownList>
+        <DownList v-if="hasDownloadFiles" :downloads="downloads"></DownList>
         <Banner v-else></Banner>
     </main>
 </template>
@@ -38,9 +38,15 @@ export default {
     data() {
         return {
             uploads: [],
+            downloads: [],
             user: {},
             isLoggedIn: false,
         }
+    },
+
+    // TODO: remove
+    created () {
+        this.signin();
     },
 
     methods: {
@@ -52,14 +58,14 @@ export default {
             this.uploads.splice(index, 1);
         },
 
-        // uploadFiles(files) {
         uploadFiles(data) {
-            // uploads
-            // downloads
-            // expiration
-            // isProtected
-            this._createDbRecord(data);
-            this._uploadFile(file);
+            // uploads downloads expiration isProtected
+            // this._createDbRecord(data);
+            this._uploadFile(this.uploads);
+
+            // TODO: need to wait
+            this.downloads.push(...this.uploads);
+            this.uploads = [];
         },
 
         signin() {
@@ -79,14 +85,13 @@ export default {
         },
 
         _createDbRecord(data) {
-            const records = data.uploads.map(d => ({
+            const records = this.uploads.map(d => ({
                 fileName: d.name,
                 downloads: 0,
                 maxDownloads: data.downloads,
                 expires: new Date(),
                 password: '123'
             }));
-            // console.log("TCL: _createDbRecord -> records", records)
             this._firestore.collection('users').doc(this.user.uid).update({
                 files: firebase.firestore.FieldValue.arrayUnion(...records)
             })
@@ -94,13 +99,15 @@ export default {
             .catch(error => console.log(error));
         },
 
-        _uploadFile(file) {
-            this._getStorage(file.name, this.user.uid).put(file)
-            .then(snapshot => {
-                console.log("TCL: uploadFiles -> snapshot", snapshot)
-            })
-            .catch(error => {
-                console.log("TCL: uploadFiles -> snapshot", error)
+        _uploadFile(files) {
+            files.forEach(file => {
+                this._getStorage(file.name, this.user.uid).put(file)
+                .then(snapshot => {
+                    console.log("TCL: uploadFiles -> snapshot", snapshot)
+                })
+                .catch(error => {
+                    console.log("TCL: uploadFiles -> snapshot", error)
+                });
             });
         },
 
@@ -113,7 +120,7 @@ export default {
             return this.uploads.length > 0;
         },
         hasDownloadFiles() {
-            return false; // TODO:
+            return this.downloads.length > 0;
         },
         _firestore() {
             return firebase.firestore();

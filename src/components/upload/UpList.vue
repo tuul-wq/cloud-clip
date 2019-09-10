@@ -46,7 +46,10 @@ export default {
     name: 'UpList',
     components: { UploadItem, DropDown, FaIcon },
     props: {
-        uploads: { type: Array, default:[] },
+        uploads: {
+            type: Array,
+            default: []
+        },
     },
     data() {
         return {
@@ -57,13 +60,13 @@ export default {
     },
     methods: {
         remove(file) {
-            const index = this.uploads.findIndex(f => f.name === file.name);
+            const index = this.uploads.findIndex(f =>
+                f.name === file.name && f.size === file.size
+            );
             this.$emit('remove', index);
         },
         upload() {
             this.$emit('upload', {
-                // TODO: use array
-                uploads: this.uploads,
                 downloads: this.downloads,
                 expiration: this.expiration,
                 isProtected: this.isProtected
@@ -114,6 +117,7 @@ export default {
         display: grid;
         row-gap: 1rem;
         padding: 1rem;
+        margin: 0;
         border-radius: $radius-sm;
         background-color: $gray-lt;
         overflow-y: auto;

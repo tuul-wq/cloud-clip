@@ -48,7 +48,7 @@ export default {
 	background-color: white;
 	border-radius: $radius-sm;
 	padding: 0.75rem 1.25rem;
-	box-shadow: 2px 2px 3px rgba(0, 0, 0, 0.1);
+	box-shadow: $item-shadow;
 
     .icon {
         grid-row: 1 / 3;
