@@ -53,9 +53,10 @@ export default {
 .bordered {
     cursor: pointer;
     background-color: #acf0b3;
-    border-radius: $radius-sm;
     border: 2px solid $green;
-    padding: 0.25rem 0.5rem;
+    border-top-right-radius: $radius-lg;
+    border-bottom-left-radius: $radius-lg;
+    padding: 0.25rem 0.5rem 0.25rem 0.75rem;
     box-shadow: 0px 0px 3px 1px rgba(0, 0, 0, 0.2);
 }
 
@@ -77,5 +78,4 @@ export default {
         padding: 0 1rem 0 0.5rem;
     }
 }
-
 </style>

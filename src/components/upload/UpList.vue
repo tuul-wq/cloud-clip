@@ -18,15 +18,18 @@
         <div class="configure">
             <div class="expire">
                 <span>Expiration after</span>
-                <DropDown class="drop" :options="downloadsProp" @select="selectDownloads"></DropDown>
+                <BaseDropDown class="drop" :options="downloadsProp" @select="selectDownloads"></BaseDropDown>
                 <span>or</span>
-                <DropDown class="drop" :options="expirationProp" @select="selectExpiration"></DropDown>
+                <BaseDropDown class="drop" :options="expirationProp" @select="selectExpiration"></BaseDropDown>
             </div>
-            <label for="protect">Protect with password
-                <input type="checkbox" id="protect" v-model="isProtected">
-                <!-- class="none" -->
-                <!-- <span class="checkmark"></span> -->
-            </label>
+            <div class="protect">
+                <label for="protect">Protect with password
+                    <input type="checkbox" id="protect" v-model="isProtected" @change="password = ''">
+                    <!-- class="none" -->
+                    <!-- <span class="checkmark"></span> -->
+                </label>
+                <BaseInput v-if="isProtected" class="password" v-model="password"></BaseInput>
+            </div>
             <button class="btn-upload" @click="upload">Upload</button>
         </div>
     </section>
@@ -34,17 +37,17 @@
 
 <script>
 import UploadItem from '@/components/upload/UploadItem.vue';
-import DropDown from '@/components/shared/DropDown.vue';
-import { shortFileSize } from '@/shared/functions/utils.js';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faPlusSquare } from '@fortawesome/free-regular-svg-icons';
 import { FontAwesomeIcon as FaIcon } from '@fortawesome/vue-fontawesome';
+import FileSize from '@/mixins/FileSize.js';
 
 library.add(faPlusSquare);
 
 export default {
     name: 'UpList',
-    components: { UploadItem, DropDown, FaIcon },
+    components: { UploadItem, FaIcon },
+    mixins: [ FileSize ],
     props: {
         uploads: {
             type: Array,
@@ -55,7 +58,8 @@ export default {
         return {
             downloads: 1,
             expiration: 1,
-            isProtected: false
+            isProtected: false,
+            password: ''
         }
     },
     methods: {
@@ -69,7 +73,8 @@ export default {
             this.$emit('upload', {
                 downloads: this.downloads,
                 expiration: this.expiration,
-                isProtected: this.isProtected
+                isProtected: !!this.password,
+                ...(!!this.password ? { password: this.password } : [])
             });
         },
         uploadMoreFiles(event) {
@@ -97,7 +102,7 @@ export default {
         },
         uploadSize() {
             const totalSize = this.uploads.reduce((sub, upload) => sub += upload.size, 0);
-            return shortFileSize(totalSize);
+            return this.shortFileSize(totalSize);
         }
     },
 }
@@ -162,6 +167,16 @@ export default {
 
         .expire {
             .drop { margin: 0 0.5rem; }
+        }
+
+        .protect {
+            display: flex;
+            align-items: center;
+            height: 1.75rem;
+
+            .password {
+                margin-left: 2rem;
+            }
         }
 
         .btn-upload {

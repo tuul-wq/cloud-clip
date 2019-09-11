@@ -14,6 +14,7 @@
             @register="registerFiles"
         ></UpList>
         <Uploader v-else @register="registerFiles"></Uploader>
+        <!-- TODO: when uploading <Uploading></Uploading> -->
 
         <DownList v-if="hasDownloadFiles" :downloads="downloads"></DownList>
         <Banner v-else></Banner>
@@ -37,6 +38,7 @@ export default {
 
     data() {
         return {
+            isUploading: false,
             uploads: [],
             downloads: [],
             user: {},
@@ -45,6 +47,7 @@ export default {
     },
 
     // TODO: remove
+    // TODO: get last uploads form local storage
     created () {
         this.signin();
     },
@@ -52,6 +55,7 @@ export default {
     methods: {
         registerFiles(files) {
             this.uploads.push(...files);
+            this.downloads.push(...files);
         },
 
         unregisterFile(index) {
@@ -59,13 +63,18 @@ export default {
         },
 
         uploadFiles(data) {
-            // uploads downloads expiration isProtected
-            // this._createDbRecord(data);
-            this._uploadFile(this.uploads);
+            // TODO: this.uploads.length > 1 => make an archive
+            // uploads downloads expiration isProtected password
+            if (this.uploads.length > 1) {
+                this._createZip(this.uploads);
+            } else {
+                // this._createDbRecord(data);
+                this._uploadFiles(this.uploads);
 
-            // TODO: need to wait
-            this.downloads.push(...this.uploads);
-            this.uploads = [];
+                // TODO: need to wait
+                this.downloads.push(...this.uploads);
+                this.uploads = [];
+            }
         },
 
         signin() {
@@ -99,7 +108,7 @@ export default {
             .catch(error => console.log(error));
         },
 
-        _uploadFile(files) {
+        _uploadFiles(files) {
             files.forEach(file => {
                 this._getStorage(file.name, this.user.uid).put(file)
                 .then(snapshot => {
@@ -113,6 +122,10 @@ export default {
 
         _getStorage(fileName, folder = '') {
             return this._storage.ref().child(folder + '/' + fileName);
+        },
+
+        _createZip() {
+
         }
     },
     computed: {
@@ -142,8 +155,8 @@ export default {
     position: relative;
 
     .corner-right {
-        right: -1rem;
-        top: -1rem;
+        right: -33px;
+        top: -33px;
         position: absolute;
     }
 }

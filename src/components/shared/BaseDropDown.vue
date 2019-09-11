@@ -10,7 +10,7 @@
 
 <script>
 export default {
-    name: 'DropDown',
+    name: 'BaseDropDown',
     props: {
         options: {
             type: Array,
@@ -35,7 +35,7 @@ export default {
 	border: 1px solid gray;
 	-webkit-appearance: none;
 	-moz-appearance: none;
-	background: url('~@/assets/icons/arrow-down.png') 94% / 0.8rem no-repeat #f8fdff;
+	background: url('~@/assets/icons/arrow-down.png') 94% / 0.8rem no-repeat $field;
 	padding: 0.1rem 2rem 0.1rem 0.1rem;
 }
 </style>>

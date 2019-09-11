@@ -29,7 +29,7 @@ export default {
     row-gap: 1rem;
     overflow-y: auto;
     list-style: none;
-    padding: 0;
+    padding: 0 1rem 0 0;
     margin: 0;
 }
 </style>

@@ -1,6 +1,6 @@
 <template>
     <li class="upload-item">
-        <img class="icon" src="@/assets/images/file.png" alt="file icon">
+        <img class="icon" src="@/assets/images/upload.png" alt="file icon">
         <span>{{ item.name }}</span>
         <span class="size">{{ size }}</span>
         <FaIcon class="btn-remove" :icon="['fas', 'times']" @click="remove"></FaIcon>
@@ -11,13 +11,14 @@
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon as FaIcon } from '@fortawesome/vue-fontawesome';
-import { shortFileSize } from '@/shared/functions/utils.js';
+import FileSize from '@/mixins/FileSize.js';
 
 library.add(faTimes);
 
 export default {
     name: 'UploadItem',
     components: { FaIcon },
+    mixins: [ FileSize ],
     props: {
         item: { type: File, default: {} },
     },
@@ -28,7 +29,7 @@ export default {
     },
     computed: {
         size() {
-            return shortFileSize(this.item.size);
+            return this.shortFileSize(this.item.size);
         }
     }
 }
@@ -69,6 +70,7 @@ export default {
         font-size: 15pt;
         color: gray;
         justify-self: center;
+        align-self: start;
 
         &:hover { color: $dark-default; }
     }
