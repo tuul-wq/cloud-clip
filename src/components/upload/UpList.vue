@@ -129,6 +129,7 @@ export default {
         max-height: 50%;
         height: 100%;
         grid-auto-rows: min-content;
+        list-style: none;
 
         &:after {
             content: "";

@@ -1,20 +1,23 @@
 <template>
     <div class="bordered">
-        <div class="info" v-if="isLoggedIn" @click="logout">
-            <FaIcon :icon="['fas', 'user-astronaut']"></FaIcon>
-            <span class="name">{{ userName }}</span>
-            <FaIcon :icon="['fas', 'sign-out-alt']"></FaIcon>
+        <FaIcon class="settings" :icon="['fas', 'cogs']" @click="goToSettings"></FaIcon>
+        <div class="user">
+            <div class="info" v-if="isLoggedIn" @click="logout">
+                <FaIcon :icon="['fas', 'user-astronaut']"></FaIcon>
+                <span class="name">{{ userName }}</span>
+                <FaIcon :icon="['fas', 'sign-out-alt']"></FaIcon>
+            </div>
+            <span v-else @click="signin">Sign In</span>
         </div>
-        <span v-else @click="signin">Sign In</span>
     </div>
 </template>
 
 <script>
 import { library } from '@fortawesome/fontawesome-svg-core';
-import { faUserAstronaut, faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
+import { faUserAstronaut, faSignOutAlt, faCogs } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon as FaIcon } from '@fortawesome/vue-fontawesome';
 
-library.add(faUserAstronaut, faSignOutAlt);
+library.add(faUserAstronaut, faSignOutAlt, faCogs);
 
 export default {
     name: 'User',
@@ -36,6 +39,10 @@ export default {
 
         signin() {
             this.$emit('signin');
+        },
+
+        goToSettings() {
+            this.$emit('goToSettings');
         }
     },
     computed: {
@@ -52,30 +59,45 @@ export default {
 
 .bordered {
     cursor: pointer;
-    background-color: #acf0b3;
-    border: 2px solid $green;
-    border-top-right-radius: $radius-lg;
-    border-bottom-left-radius: $radius-lg;
-    padding: 0.25rem 0.5rem 0.25rem 0.75rem;
-    box-shadow: 0px 0px 3px 1px rgba(0, 0, 0, 0.2);
-}
+    display: flex;
 
-.info {
-    display: grid;
-    grid-template-columns: repeat(3, auto);
-    align-items: center;
-    &:hover {
-        color: black;
+    .settings {
+        font-size: 14pt;
+        align-self: center;
+        margin-right: 0.4rem;
+        color: #0b4d00;
+        transition: .1s;
+        &:hover {
+            font-size: 13pt;
+        }
     }
 
-    .fa-user-astronaut {
-        font-size: 14pt;
+    .user {
+        background-color: #acf0b3;
+        border: 2px solid $green;
+        border-top-right-radius: $radius-lg;
+        border-bottom-left-radius: $radius-lg;
+        padding: 0.25rem 0.5rem 0.25rem 0.75rem;
+        box-shadow: 0px 0px 3px 1px rgba(0, 0, 0, 0.2);
     }
 
-    .name {
-        font-size: 14pt;
-        line-height: 1;
-        padding: 0 1rem 0 0.5rem;
+    .info {
+        display: grid;
+        grid-template-columns: repeat(3, auto);
+        align-items: center;
+        &:hover {
+            color: black;
+        }
+
+        .fa-user-astronaut {
+            font-size: 14pt;
+        }
+
+        .name {
+            font-size: 14pt;
+            line-height: 1;
+            padding: 0 1rem 0 0.5rem;
+        }
     }
 }
 </style>

@@ -3,6 +3,8 @@
         <DownloadItem v-for="(download, index) in downloads"
             :key="index"
             :item="download"
+            @goToDownload="goToDownload"
+            @copy="copy"
         ></DownloadItem>
     </ul>
 </template>
@@ -18,6 +20,15 @@ export default {
             type: Array,
             default: []
         },
+    },
+    methods: {
+        goToDownload() {
+            this.$emit('goToDownload');
+        },
+
+        copy(link) {
+            this.$emit('copy', link);
+        }
     },
 }
 </script>

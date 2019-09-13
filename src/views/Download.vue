@@ -1,15 +1,16 @@
 <template>
     <div>
-        <span>Settings page</span>
+        <span>Download page!</span>
         <router-link to="/">main</router-link>
     </div>
 </template>
 
 <script>
 export default {
-    name: 'Settings'
+    name: 'Download',
 }
 </script>
 
-<style scoped lang="scss">
+<style lang="scss" scoped>
+
 </style>

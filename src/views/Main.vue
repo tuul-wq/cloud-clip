@@ -5,6 +5,7 @@
             :email="user.email"
             @signin="signin"
             @logout="logout"
+            @goToSettings="goToSettings"
         ></User>
 
         <UpList v-if="hasRegisteredFiles"
@@ -16,7 +17,11 @@
         <Uploader v-else @register="registerFiles"></Uploader>
         <!-- TODO: when uploading <Uploading></Uploading> -->
 
-        <DownList v-if="hasDownloadFiles" :downloads="downloads"></DownList>
+        <DownList v-if="hasDownloadFiles"
+            :downloads="downloads"
+            @goToDownload="goToDownload"
+            @copy="copy"
+        ></DownList>
         <Banner v-else></Banner>
     </main>
 </template>
@@ -62,21 +67,6 @@ export default {
             this.uploads.splice(index, 1);
         },
 
-        uploadFiles(data) {
-            // TODO: this.uploads.length > 1 => make an archive
-            // uploads downloads expiration isProtected password
-            if (this.uploads.length > 1) {
-                this._createZip(this.uploads);
-            } else {
-                // this._createDbRecord(data);
-                this._uploadFiles(this.uploads);
-
-                // TODO: need to wait
-                this.downloads.push(...this.uploads);
-                this.uploads = [];
-            }
-        },
-
         signin() {
             const e = 'vasya@gmail.com';
             const p = '123456';
@@ -93,7 +83,32 @@ export default {
             });
         },
 
-        _createDbRecord(data) {
+        goToSettings() {
+            this.$router.push('settings');
+        },
+
+        goToDownload() {
+            this.$router.push('download');
+        },
+
+        copy(link) {
+            console.log("TCL: copy -> link", link)
+            document.execCommand('copy', false, link);
+        },
+
+        uploadFiles(data) {
+            // TODO: this.uploads.length > 1 => make an archive
+            // uploads downloads expiration isProtected password
+            const uploads = this.uploads.length > 1 ? this._createZip() : this.uploads;
+            // this._createDbRecords(data);
+            this._uploadFilesInStorage(uploads);
+
+            // TODO: need to wait
+            this.downloads.push(...this.uploads);
+            this.uploads = [];
+        },
+
+        _createDbRecords(data) {
             const records = this.uploads.map(d => ({
                 fileName: d.name,
                 downloads: 0,
@@ -108,7 +123,7 @@ export default {
             .catch(error => console.log(error));
         },
 
-        _uploadFiles(files) {
+        _uploadFilesInStorage(files) {
             files.forEach(file => {
                 this._getStorage(file.name, this.user.uid).put(file)
                 .then(snapshot => {
@@ -118,6 +133,7 @@ export default {
                     console.log("TCL: uploadFiles -> snapshot", error)
                 });
             });
+            // in the end set storage data, set downloads
         },
 
         _getStorage(fileName, folder = '') {
@@ -125,7 +141,7 @@ export default {
         },
 
         _createZip() {
-
+            // return zip;
         }
     },
     computed: {

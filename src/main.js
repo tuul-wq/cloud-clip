@@ -3,6 +3,7 @@ import App from './App.vue';
 import firebase from 'firebase/app';
 import BaseInput from '@/components/shared/BaseInput.vue';
 import BaseDropDown from '@/components/shared/BaseDropDown.vue';
+import router from '@/router.js';
 
 Vue.config.productionTip = false;
 
@@ -21,7 +22,6 @@ const components = {
     BaseInput,
     BaseDropDown,
 };
-
 Object.keys(components).forEach(key => {
     const name = components[key].name;
     if (name) {
@@ -31,4 +31,4 @@ Object.keys(components).forEach(key => {
     }
 });
 
-new Vue({ render: h => h(App), }).$mount('#app');
+new Vue({ render: h => h(App), router}).$mount('#app');

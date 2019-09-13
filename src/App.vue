@@ -1,7 +1,6 @@
 <template>
   <div id="app">
-      <Main></Main>
-      <!-- <Settings></Settings> -->
+      <router-view></router-view>
   </div>
 </template>
 
@@ -45,5 +44,11 @@ body {
     max-width: 60rem;
     height: 35rem;
 }
+
+// @media (max-width: 580px) {
+//   #app {
+//       height: auto;
+//   }
+// }
 </style>
 
