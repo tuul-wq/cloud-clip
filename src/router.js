@@ -8,17 +8,12 @@ const router = new VueRouter({
         {
             path: '/',
             name: 'main',
-            component: () => import('@/views/Main.vue')
+            component: () => import('@/views/main/Main.vue')
         },
         {
             path: '/download',
             name: 'download',
-            component: () => import('@/views/Download.vue')
-        },
-        {
-            path: '/settings',
-            name: 'settings',
-            component: () => import('@/views/Settings.vue')
+            component: () => import('@/views/download/Download.vue')
         },
     ]
 });

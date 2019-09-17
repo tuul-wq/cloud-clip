@@ -1,16 +1,12 @@
 <template>
-  <div id="app">
+  <main id="app">
       <router-view></router-view>
-  </div>
+  </main>
 </template>
 
 <script>
-import Main from '@/views/Main.vue';
-// import Settings from '@/views/Settings.vue';
-
 export default {
-    name: 'App',
-    components: { Main }
+    name: 'App'
 }
 </script>
 

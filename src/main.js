@@ -1,8 +1,8 @@
 import Vue from 'vue';
 import App from './App.vue';
 import firebase from 'firebase/app';
-import BaseInput from '@/components/shared/BaseInput.vue';
-import BaseDropDown from '@/components/shared/BaseDropDown.vue';
+import BaseInput from '@/components/BaseInput.vue';
+import BaseDropDown from '@/components/BaseDropDown.vue';
 import router from '@/router.js';
 
 Vue.config.productionTip = false;

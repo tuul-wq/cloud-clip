@@ -1,5 +1,5 @@
 <template>
-    <main id="main">
+    <section id="main">
         <User class="corner-right"
             :isLoggedIn="isLoggedIn"
             :email="user.email"
@@ -23,15 +23,16 @@
             @copy="copy"
         ></DownList>
         <Banner v-else></Banner>
-    </main>
+    </section>
 </template>
 
 <script>
-import Uploader from '@/components/upload/Uploader.vue';
-import User from '@/components/shared/User.vue';
-import UpList from '@/components/upload/UpList.vue';
-import DownList from '@/components/download/DownList.vue';
-import Banner from '@/components/download/Banner.vue';
+import JSZip from 'jszip';
+import Uploader from './components/Uploader.vue';
+import UpList from './components/UpList.vue';
+import DownList from './components/DownList.vue';
+import Banner from './components/Banner.vue';
+import User from '@/components/User.vue';
 import firebase from 'firebase/app';
 import 'firebase/storage';
 import 'firebase/firestore';
@@ -59,8 +60,8 @@ export default {
 
     methods: {
         registerFiles(files) {
+            console.log("TCL: registerFiles -> files", files)
             this.uploads.push(...files);
-            this.downloads.push(...files);
         },
 
         unregisterFile(index) {
@@ -96,15 +97,15 @@ export default {
             document.execCommand('copy', false, link);
         },
 
-        uploadFiles(data) {
+        async uploadFiles(data) {
             // TODO: this.uploads.length > 1 => make an archive
             // uploads downloads expiration isProtected password
-            const uploads = this.uploads.length > 1 ? this._createZip() : this.uploads;
+            const uploads = this.uploads.length > 1 ? await this._createZip() : this.uploads;
             // this._createDbRecords(data);
-            this._uploadFilesInStorage(uploads);
+            this._uploadFilesInStorage([uploads]);
 
             // TODO: need to wait
-            this.downloads.push(...this.uploads);
+            this.downloads.push(uploads);
             this.uploads = [];
         },
 
@@ -141,7 +142,11 @@ export default {
         },
 
         _createZip() {
-            // return zip;
+            const zip = new JSZip();
+            this.uploads.forEach(upload => zip.file(upload.name, upload));
+            return zip.generateAsync({type: 'blob'}).then(file =>
+                new File([file], 'Archive.zip', {type: 'application/zip'})
+            );
         }
     },
     computed: {

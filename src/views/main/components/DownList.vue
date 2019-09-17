@@ -10,7 +10,7 @@
 </template>
 
 <script>
-import DownloadItem from '@/components/download/DownloadItem.vue';
+import DownloadItem from './DownloadItem.vue';
 
 export default {
     name: 'DownList',

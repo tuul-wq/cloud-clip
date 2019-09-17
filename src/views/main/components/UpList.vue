@@ -36,7 +36,7 @@
 </template>
 
 <script>
-import UploadItem from '@/components/upload/UploadItem.vue';
+import UploadItem from './UploadItem.vue';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faPlusSquare } from '@fortawesome/free-regular-svg-icons';
 import { FontAwesomeIcon as FaIcon } from '@fortawesome/vue-fontawesome';
