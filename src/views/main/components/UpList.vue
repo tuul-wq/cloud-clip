@@ -56,7 +56,7 @@ export default {
     },
     data() {
         return {
-            downloads: 1,
+            downloadsLimit: 1,
             expiration: 1,
             isProtected: false,
             password: ''
@@ -71,8 +71,9 @@ export default {
         },
         upload() {
             this.$emit('upload', {
-                downloads: this.downloads,
-                expiration: this.expiration,
+                downloadsLimit: this.downloadsLimit,
+                expiration: Date.now() + 50000,
+                // expiration: this.expiration,
                 isProtected: !!this.password,
                 ...(!!this.password ? { password: this.password } : [])
             });
@@ -81,7 +82,7 @@ export default {
             this.$emit('register', [...event.target.files]);
         },
         selectDownloads(value) {
-            this.downloads = value;
+            this.downloadsLimit = value;
         },
         selectExpiration(value) {
             this.expiration = value;

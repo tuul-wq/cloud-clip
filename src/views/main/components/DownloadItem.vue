@@ -2,17 +2,18 @@
     <li class="download-item">
         <div class="info">
             <img class="icon" src="@/assets/images/download.png" alt="file icon">
-            <span>{{ item.name }}</span>
+            <span>{{ item.displayName }}</span>
             <span class="size">{{ size }}</span>
             <FaIcon class="icon-remove" :icon="['fas', 'times']" @click="remove"></FaIcon>
         </div>
-        <span class="expire-info">Expires after 1 download or 5h 23m</span>
+        <span class="expire-info">Expires after {{ downloadsLimit }} or {{ timeLeft }}</span>
         <details class="archive-info" v-if="isArchive">
             <summary>{{ fileCount }} files</summary>
             <ul>
-                <li>1 file</li>
-                <li>2 file</li>
-                <li>3 file</li>
+                <li v-for="(subFile, index) in item.subFiles" :key="index">
+                    <span>{{ subFile.name }}</span>
+                    <span class="size sm">{{ shortFileSize(subFile.size) }}</span>
+                </li>
             </ul>
         </details>
         <hr class="divider">
@@ -44,7 +45,7 @@ export default {
     mixins: [ FileSize ],
     props: {
         item: {
-            type: File, // TODO: change type
+            type: Object,
             default: {}
         },
     },
@@ -66,10 +67,16 @@ export default {
             return this.shortFileSize(this.item.size);
         },
         isArchive() {
-            return true;
+            return this.item.subFiles;
         },
         fileCount() {
-            return 3;
+            return this.item.subFiles.length;
+        },
+        downloadsLimit() {
+            return this.item.downloadsLimit + ' download' + (this.item.downloadsLimit > 1 ? 's' : '');
+        },
+        timeLeft() {
+            return '1d';
         }
     },
 }
@@ -102,12 +109,6 @@ $link: #58a232;
             justify-self: center;
         }
 
-        .size {
-            padding-top: 0.3rem;
-            font-size: 11pt;
-            color: $gray;
-        }
-
         .icon-remove {
             grid-row: 1 / 3;
             grid-column: 3 / 4;
@@ -138,6 +139,7 @@ $link: #58a232;
 
         ul {
             margin-top: 0.25rem;
+            padding: 0 1.5rem;
             li {
                 font-size: 11pt;
                 &:not(:last-of-type) {
@@ -167,6 +169,17 @@ $link: #58a232;
             &:hover {
                 color: lighten($color: $link, $amount: 10%);
             }
+        }
+    }
+
+    .size {
+        padding-top: 0.3rem;
+        font-size: 11pt;
+        color: $gray;
+
+        &.sm {
+            font-size: 9pt;
+            float: right;
         }
     }
 }

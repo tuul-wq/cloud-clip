@@ -15,11 +15,11 @@
             @register="registerFiles"
         ></UpList>
         <Uploader v-else @register="registerFiles"></Uploader>
-        <!-- TODO: when uploading <Uploading></Uploading> -->
 
         <DownList v-if="hasDownloadFiles"
             :downloads="downloads"
             @goToDownload="goToDownload"
+            @remove="removeDownload"
             @copy="copy"
         ></DownList>
         <Banner v-else></Banner>
@@ -28,11 +28,15 @@
 
 <script>
 import JSZip from 'jszip';
+import { mapGetters } from 'vuex';
+import uuid from 'uuid/v1';
+
 import Uploader from './components/Uploader.vue';
 import UpList from './components/UpList.vue';
 import DownList from './components/DownList.vue';
 import Banner from './components/Banner.vue';
 import User from '@/components/User.vue';
+
 import firebase from 'firebase/app';
 import 'firebase/storage';
 import 'firebase/firestore';
@@ -45,10 +49,6 @@ export default {
     data() {
         return {
             isUploading: false,
-            uploads: [],
-            downloads: [],
-            user: {},
-            isLoggedIn: false,
         }
     },
 
@@ -56,32 +56,46 @@ export default {
     // TODO: get last uploads form local storage
     created () {
         this.signin();
+
+        if (!this.isLoggedIn) {
+            const storageItems = Object.keys(localStorage).map(key => JSON.parse(localStorage.getItem(key)));
+            this.$store.commit('addDownloads', storageItems);
+            console.log(this.downloads);
+        }
     },
 
     methods: {
         registerFiles(files) {
-            this.uploads.push(...files);
-            console.log("TCL: registerFiles -> files", this.uploads)
+            this.$store.commit('addUploads', files);
         },
 
         unregisterFile(index) {
-            this.uploads.splice(index, 1);
+            this.$store.commit('removeUpload', index);
         },
 
+        removeDownload(index, id) {
+            console.log("TCL: removeDownload -> id", id)
+            // TODO: remove from storage and server
+            localStorage.removeItem(id);
+            this.$store.commit('removeDownload', index);
+        },
+        // removeDownload(args) {
+        //     console.log("TCL: removeDownload -> args", args)
+        //     console.log("TCL: removeDownload -> id", args.id)
+        //     // TODO: remove from storage and server
+        //     localStorage.removeItem(args.id);
+        //     this.$store.commit('removeDownload', args.index);
+        // },
+
         signin() {
-            const e = 'vasya@gmail.com';
-            const p = '123456';
-            firebase.auth().signInWithEmailAndPassword(e, p).then(user => {
-                this.user = user.user;
-                this.isLoggedIn = true;
+            this.$store.dispatch('signin', {
+                email: 'vasya@gmail.com',
+                password: '123456'
             });
         },
 
         logout() {
-            firebase.auth().signOut().then(() => {
-                this.user = {}
-                this.isLoggedIn = false;
-            });
+            this.$store.dispatch('logout');
         },
 
         goToSettings() {
@@ -97,44 +111,51 @@ export default {
             document.execCommand('copy', false, link);
         },
 
-        async uploadFiles(data) {
-            // TODO: this.uploads.length > 1 => make an archive
-            // uploads downloads expiration isProtected password
-            const uploads = this.uploads.length > 1 ? [await this._createZip()] : this.uploads;
-            // this._createDbRecords(data);
-            this._uploadFilesInStorage(uploads);
+        async uploadFiles(params) {
+            const file = this.uploads.length > 1 ? await this._createZip() : this.uploads[0];
+            const uuidFile = new File([file], uuid(), {type: file.type});
+            const record = this._getRecord(uuidFile, {...params, displayName: file.name});
+            console.log("TCL: uploadFiles -> record", record)
 
-            // TODO: need to wait
-            this.downloads.push(uploads);
-            this.uploads = [];
+            try {
+                await this._uploadFileInStorage(uuidFile);
+                await this._createDbRecord(record);
+                this.$store.commit('addDownloads', [record]);
+                this.$store.commit('clearUploads');
+                this._writeToLocalStorage(record);
+            } catch (err) { console.log('Error - ', err) }
         },
 
-        _createDbRecords(data) {
-            const records = this.uploads.map(d => ({
-                fileName: d.name,
-                downloads: 0,
-                maxDownloads: data.downloads,
-                expires: new Date(),
+        _getRecord(file, params) {
+            const record = {
+                size: file.size,
+                storageName: file.name,
+                displayName: params.displayName,
+                downloadsCurrent: 0,
+                downloadsLimit: params.downloadsLimit,
+                expiration: params.expiration,
                 password: '123'
-            }));
-            this._firestore.collection('users').doc(this.user.uid).update({
-                files: firebase.firestore.FieldValue.arrayUnion(...records)
-            })
-            .then(() => console.log("Document successfully updated!"))
-            .catch(error => console.log(error));
+                // password: params.password
+            };
+            if (this.uploads.length > 1) {
+                record.subFiles = this.uploads.map(upload => ({ name: upload.name, size: upload.size }));
+            }
+            return record;
         },
 
-        _uploadFilesInStorage(files) {
-            files.forEach(file => {
-                this._getStorage(file.name, this.user.uid).put(file)
-                .then(snapshot => {
-                    console.log("TCL: uploadFiles -> snapshot", snapshot)
-                })
-                .catch(error => {
-                    console.log("TCL: uploadFiles -> snapshot", error)
-                });
-            });
-            // in the end set storage data, set downloads
+        _uploadFileInStorage(file) {
+            return this._getStorage(file.name, this.user.uid).put(file)
+                .catch(error => console.log(error));
+        },
+
+        _createDbRecord(record) {
+            return this._firestore.collection('users').doc(this.user.uid).update({
+                files: firebase.firestore.FieldValue.arrayUnion(record)
+            }).catch(error => console.log(error));
+        },
+
+        _writeToLocalStorage(record) {
+            localStorage.setItem(record.storageName, JSON.stringify(record));
         },
 
         _getStorage(fileName, folder = '') {
@@ -156,12 +177,16 @@ export default {
         hasDownloadFiles() {
             return this.downloads.length > 0;
         },
+        isLoggedIn() {
+            return !!this.user.uid;
+        },
         _firestore() {
             return firebase.firestore();
         },
         _storage() {
             return firebase.storage();
-        }
+        },
+        ...mapGetters(['uploads', 'downloads', 'user'])
     },
 }
 </script>

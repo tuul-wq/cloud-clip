@@ -1,12 +1,12 @@
 <template>
     <ul id="download-list">
-        download list
-        <!-- <DownloadItem v-for="(download, index) in downloads"
+        <DownloadItem v-for="(download, index) in downloads"
             :key="index"
             :item="download"
             @goToDownload="goToDownload"
+            @remove="remove"
             @copy="copy"
-        ></DownloadItem> -->
+        ></DownloadItem>
     </ul>
 </template>
 
@@ -29,6 +29,13 @@ export default {
 
         copy(link) {
             this.$emit('copy', link);
+        },
+
+        remove(file) {
+            const index = this.downloads.findIndex(f =>
+                f.storageName === file.storageName && f.size === file.size
+            );
+            this.$emit('remove', index, storageName);
         }
     },
 }

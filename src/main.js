@@ -1,9 +1,11 @@
 import Vue from 'vue';
+import router from '@/router.js';
 import App from './App.vue';
 import firebase from 'firebase/app';
-import BaseInput from '@/components/BaseInput.vue';
+import store from '@/store/store.js';
+
 import BaseDropDown from '@/components/BaseDropDown.vue';
-import router from '@/router.js';
+import BaseInput from '@/components/BaseInput.vue';
 
 Vue.config.productionTip = false;
 
@@ -31,4 +33,4 @@ Object.keys(components).forEach(key => {
     }
 });
 
-new Vue({ render: h => h(App), router}).$mount('#app');
+new Vue({ render: h => h(App), router, store}).$mount('#app');
