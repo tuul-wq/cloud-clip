@@ -60,8 +60,8 @@ export default {
 
     methods: {
         registerFiles(files) {
-            console.log("TCL: registerFiles -> files", files)
             this.uploads.push(...files);
+            console.log("TCL: registerFiles -> files", this.uploads)
         },
 
         unregisterFile(index) {
@@ -100,9 +100,9 @@ export default {
         async uploadFiles(data) {
             // TODO: this.uploads.length > 1 => make an archive
             // uploads downloads expiration isProtected password
-            const uploads = this.uploads.length > 1 ? await this._createZip() : this.uploads;
+            const uploads = this.uploads.length > 1 ? [await this._createZip()] : this.uploads;
             // this._createDbRecords(data);
-            this._uploadFilesInStorage([uploads]);
+            this._uploadFilesInStorage(uploads);
 
             // TODO: need to wait
             this.downloads.push(uploads);

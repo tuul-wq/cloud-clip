@@ -1,11 +1,12 @@
 <template>
     <ul id="download-list">
-        <DownloadItem v-for="(download, index) in downloads"
+        download list
+        <!-- <DownloadItem v-for="(download, index) in downloads"
             :key="index"
             :item="download"
             @goToDownload="goToDownload"
             @copy="copy"
-        ></DownloadItem>
+        ></DownloadItem> -->
     </ul>
 </template>
 
