@@ -1,11 +1,12 @@
 import Vue from 'vue';
-import router from '@/router.js';
-import App from './App.vue';
+import App from './App';
+import router from '@/router';
 import firebase from 'firebase/app';
-import store from '@/store/store.js';
+import store from '@/store';
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 
-import BaseDropDown from '@/components/BaseDropDown.vue';
-import BaseInput from '@/components/BaseInput.vue';
+import BaseDropDown from '@/shared/components/BaseDropDown.vue';
+import BaseInput from '@/shared/components/BaseInput.vue';
 
 Vue.config.productionTip = false;
 
@@ -23,6 +24,7 @@ firebase.initializeApp(firebaseConfig);
 const components = {
     BaseInput,
     BaseDropDown,
+    FontAwesomeIcon
 };
 Object.keys(components).forEach(key => {
     const name = components[key].name;
