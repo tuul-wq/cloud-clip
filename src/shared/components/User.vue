@@ -20,6 +20,7 @@ library.add(faUserAstronaut, faSignOutAlt, faCogs);
 
 export default {
   name: 'User',
+
   props: {
     isLoggedIn: {
       type: Boolean,
@@ -30,6 +31,7 @@ export default {
       default: ''
     }
   },
+
   computed: {
     userName() {
       return this.email.split('@')[0];

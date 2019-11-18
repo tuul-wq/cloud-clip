@@ -4,7 +4,7 @@
       <img class="icon" src="@/assets/images/download.png" alt="file icon">
       <span>{{ item.displayName }}</span>
       <span class="size">{{ size }}</span>
-      <FontAwesomeIcon class="icon-remove" :icon="['fas', 'times']" @click="$emit('remove', item)" />
+      <FontAwesomeIcon class="icon-remove" :icon="['fas', 'times']" @click="removeItem" />
     </div>
     <span class="expire-info">Expires after {{ downloadsLimit }} or {{ timeLeft }}</span>
     <details v-if="isArchive" class="archive-info">
@@ -18,7 +18,7 @@
     </details>
     <hr class="divider">
     <div class="actions">
-      <button class="btn-link" @click="$emit('route-to', item.docId)">
+      <button class="btn-link" @click="navigate">
         <FontAwesomeIcon :icon="['fas', 'download']" />Download
       </button>
       <button class="btn-link" @click="copyLink">
@@ -30,6 +30,7 @@
 
 <script>
 import moment from 'moment';
+import { mapGetters } from 'vuex';
 
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faTimes, faDownload } from '@fortawesome/free-solid-svg-icons';
@@ -53,10 +54,31 @@ export default {
   methods: {
     copyLink() {
       this.$emit('copy', 'www.google.com');
+    },
+
+    navigate(fieldId) {
+      this.$route.push({
+        name: 'download',
+        params: { userId, fileId: this.item.storageName }
+      });
+    },
+
+    removeItem() {
+      this.$store.commit(this.item);
+      // remove(file) {
+      //   const index = this.downloads.findIndex(
+      //     f => f.storageName === file.storageName && f.size === file.size
+      //   );
+      //   this.$emit('remove', index);
+      // }
     }
   },
 
   computed: {
+    ...mapGetters({
+      userId: state => state.user.uid
+    }),
+
     size() {
       return fileSize(this.item.size);
     },

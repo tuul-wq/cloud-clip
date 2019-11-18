@@ -18,13 +18,11 @@
     />
     <Uploader v-else @register="registerFiles" />
 
-    <DownList
-      v-if="hasDownloadFiles"
-      :downloads="downloads"
-      @route-to="goToDownload"
-      @remove="removeDownload"
-      @copy="copy"
-    />
+    <ul id="download-list" v-if="hasDownloadFiles">
+      <li v-for="(download, index) in downloads" :key="index">
+        <DownloadItem :item="download" />
+      </li>
+    </ul>
     <Banner v-else />
   </section>
 </template>
@@ -35,7 +33,7 @@ import { mapGetters } from 'vuex';
 import uuid from 'uuid/v1';
 
 import Uploader from './Uploader';
-import UpList from './UpList';
+import DownloadItem from './DownloadItem';
 import DownList from './DownList';
 import Banner from './Banner';
 import User from '@/shared/components/User';
@@ -248,5 +246,15 @@ export default {
     grid-template-columns: auto;
     grid-auto-flow: row;
   }
+}
+
+#download-list {
+  display: grid;
+  grid-auto-rows: min-content;
+  row-gap: 1rem;
+  overflow-y: auto;
+  list-style: none;
+  padding: 0 1rem 0 0;
+  margin: 0;
 }
 </style>

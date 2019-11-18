@@ -14,6 +14,7 @@
 <script>
 export default {
   name: 'BaseDropDown',
+
   props: {
     options: {
       type: Array,
