@@ -14,7 +14,7 @@
     "@fortawesome/vue-fontawesome": "^0.1.6",
     "core-js": "^2.6.5",
     "firebase": "^6.3.4",
-    "jszip": "^3.2.2",
+    "jszip": "^3.7.0",
     "moment": "^2.24.0",
     "uuid": "^3.3.3",
     "vue": "^2.6.10",
